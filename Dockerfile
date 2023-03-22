@@ -1,0 +1,8 @@
+FROM python:3.10-alpine
+
+WORKDIR /app
+
+ENV PYTHONDONTWRITEBYTECODE 1
+ENV PYTHONUNBUFFERED 1
+
+COPY . /app/requirements.txt
