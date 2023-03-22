@@ -8,24 +8,27 @@ from utils.buttons import button1, button2, button3, button4, button5, button11
 
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    """
+    Iniciar la conversación con el bot
+    """
     user_id = update.effective_user.id
     chat_data = context.chat_data
     reply_markup = InlineKeyboardMarkup([
         [button1],
         [button2, button5],
     ])
-    # Verifique si el usuario ya está registrado mediante una API
+    # Verifique si el usuario ya está registrado
     response = requests.get(f'{API_URL}{CONSULT_CLIENT_ENDPOINT}{user_id}')
     if response.status_code == 200:            
         profile = response.json()
         if profile['exist'] == True:
             # Si el usuario está registrado, guarde sus datos en chat_data con la key profile
             chat_data['profile'] = profile['client']
-            # Ademas creamos el carrito con la key cart
+            # Creamos el carrito con la key cart
             chat_data['cart'] = {"product": []}
             await update.message.reply_text(f'Hola {chat_data["profile"]["first_name_telegram"]}, bienvenido de nuevo!', reply_markup=reply_markup)
         else:
-            # Si el usuario no está registrado, registre al nuevo cliente mediante una API y guarde sus datos en chat_data con la key profile
+            # Si el usuario no está registrado, se registra al nuevo cliente y se guarda sus datos en chat_data con la key profile
             data = {'first_name_telegram': update.effective_user.first_name, 'username_telegram': update.effective_user.username, 'chatID': user_id, 'language_code': update.effective_user.language_code}
             response = requests.post(f'{API_URL}{REGISTER_CLIENT_ENDPOINT}', json=data)
             if response.status_code == 201:
@@ -39,6 +42,9 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
         
 
 def get_restaurant_list():
+    """
+    Función para obtenemos la lista de restaurantes mediante el servicio
+    """
     response = requests.get(f'{API_URL}{RESTAURANTS_ENDPOINT}')
     if response.status_code == 200:
         restaurantes = response.json()
@@ -60,6 +66,9 @@ def get_restaurant_list():
 
 
 def get_menu_list(id_rest):
+    """
+    Función para obtener el menu del restaurante seleccionado por el usuario
+    """
     response = requests.get(f'{API_URL}{MENU_ENDPOINT}{id_rest}')
     if response.status_code == 200:
         categorias = response.json()
@@ -79,6 +88,9 @@ def get_menu_list(id_rest):
 
 
 def get_order_list(id_user):
+    """
+    Función para obtener el listdo de órdenes del usuario
+    """
     response = requests.get(f'{API_URL}{ORDERS_ENDPOINT}{id_user}')
     if response.status_code == 200:
         return response.json()
@@ -87,6 +99,9 @@ def get_order_list(id_user):
 
 
 async def send_result(user_direction, chat, id_user, list_product, cart):
+    """
+    Función para generar la orden a partir de los productos en el carrito del cliente
+    """
     
     if len(list_product) == 0:
         msg = '❗ No se pudo generar la órden, su carrito está vacio.'

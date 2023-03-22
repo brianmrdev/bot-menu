@@ -4,9 +4,14 @@ from utils.buttons import button5, button1, button2, button3, button6, button7, 
 from utils.functions import get_restaurant_list, get_menu_list, get_order_list, send_result
 from utils.config import ASK_DIRECTION
 
+
 async def restaurant_list_callback(update: Update, context: CallbackContext):
+    """
+    Funcion para manejar la lista de restaurantes
+    """
     query = update.callback_query
     await query.answer()
+    
     markup_restaurant = get_restaurant_list()
     
     await query.edit_message_text(
@@ -16,6 +21,9 @@ async def restaurant_list_callback(update: Update, context: CallbackContext):
     
 
 async def back_restaurant_list_callback(update: Update, context: CallbackContext):
+    """
+    Funcion para regresar al inicio
+    """
     query = update.callback_query
     await query.answer()
     
@@ -27,11 +35,15 @@ async def back_restaurant_list_callback(update: Update, context: CallbackContext
         ])
     )
 
-# Definir función para manejar la selección del restaurante por el usuario
+
 async def select_menu_callback(update: Update, context: CallbackContext):
+    """
+    Función para manejar la selección del restaurante por el usuario y mostrar el menu de dicho restaurante
+    """
     query = update.callback_query
     id_rest = int(query.data.split(":")[1])
     await query.answer()
+    
     markup_menu = get_menu_list(id_rest)
     
     await query.edit_message_text(
@@ -41,13 +53,15 @@ async def select_menu_callback(update: Update, context: CallbackContext):
 
 
 async def add_to_cart(update: Update, context: CallbackContext):
+    """
+    Funcion para agregar los productos al carrito
+    """
     query = update.callback_query
     cart = context.chat_data['cart']['product']
     product_id = int(query.data.split(":")[1])
     product_description = str(query.data.split(":")[2])
     product_price = float(query.data.split(":")[3])
 
-    # Agrega el producto al carrito
     new_product = {"id": product_id, "description": product_description, "price":product_price }
     cart.append(new_product)    
 
@@ -55,6 +69,9 @@ async def add_to_cart(update: Update, context: CallbackContext):
 
 
 async def order_menu_callback(update: Update, context: CallbackContext):
+    """
+    Funcion para manejar el menu principal de órdenes
+    """
     query = update.callback_query
     await query.answer()
     
@@ -69,6 +86,9 @@ async def order_menu_callback(update: Update, context: CallbackContext):
 
 
 async def cart_menu_callback(update: Update, context: CallbackContext):
+    """
+    Función para regresar a la lista de restaurantes
+    """
     query = update.callback_query
     await query.answer()
     
@@ -82,7 +102,11 @@ async def cart_menu_callback(update: Update, context: CallbackContext):
     )
 
 
+
 async def cart_list_callback(update: Update, context: CallbackContext):
+    """
+    Función para mostrar los productos que tiene el usuario en el carrito
+    """
     cart = context.chat_data['cart']['product']
     query = update.callback_query
     await query.answer()
@@ -111,6 +135,9 @@ async def cart_list_callback(update: Update, context: CallbackContext):
     
 
 async def cart_clear_callback(update: Update, context: CallbackContext):
+    """
+    Función para vaciar el carrito del usuario
+    """
     cart = context.chat_data['cart']['product']
     query = update.callback_query
     await query.answer()
@@ -126,6 +153,9 @@ async def cart_clear_callback(update: Update, context: CallbackContext):
 
 
 async def order_list_callback(update: Update, context: CallbackContext):
+    """
+    Función para mostrar la lista de órdenes
+    """
     id_user = context.chat_data['profile']['pk']
     query = update.callback_query
     await query.answer()
@@ -156,8 +186,11 @@ async def order_list_callback(update: Update, context: CallbackContext):
         ])
     )
 
-    
+
 async def order_create_callback(update: Update, context: CallbackContext):
+    """
+    Función para solicitar la dirección al usuario
+    """
     query = update.callback_query
     await query.answer()
     await query.edit_message_text(
@@ -167,6 +200,9 @@ async def order_create_callback(update: Update, context: CallbackContext):
 
 
 async def ask_direction(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    """
+    Función para capturar la dirección enviada por el usuario y crear la orden
+    """
     cart = context.chat_data['cart']['product']
     user_direction = update.message.text
     id_user = context.chat_data['profile']['pk']
@@ -178,6 +214,9 @@ async def ask_direction(update: Update, context: ContextTypes.DEFAULT_TYPE) -> N
 
 
 async def cancel(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
+    """
+    Funcion para cancelar el estado cuando el bot pregunta la dirección al usuario
+    """
     await update.message.reply_text(
         "Su órden ha sido cancelada correctamente",
         reply_markup=InlineKeyboardMarkup([

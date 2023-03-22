@@ -8,6 +8,7 @@ from utils.callback_query_handler import ask_direction, restaurant_list_callback
 
 
 def main() -> None:
+    """Run the bot."""
     
     # Carga las variables de entorno del archivo .env en el entorno actual
     load_dotenv()
